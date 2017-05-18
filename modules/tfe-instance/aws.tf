@@ -40,6 +40,15 @@ variable "redis_port" {}
 
 variable "kms_key_id" {}
 
+variable "arn_partition" {
+  description = "AWS partition to use (used mostly by govcloud)"
+  default     = "aws"
+}
+
+variable "internal_elb" {
+  default = false
+}
+
 resource "aws_security_group" "ptfe" {
   count = "${var.internal_security_group != "" ? 0 : 1}"
 
@@ -137,6 +146,7 @@ resource "aws_launch_configuration" "ptfe" {
 mkdir -p /etc/atlas
 
 aws configure set s3.signature_version s3v4
+aws configure set default.region ${var.bucket_region}
 aws s3 cp s3://${aws_s3_bucket_object.setup.bucket}/${aws_s3_bucket_object.setup.key} /etc/atlas/boot.env
   BASH
 }
@@ -199,6 +209,7 @@ KMS_KEY_ID="${var.kms_key_id}"
 }
 
 resource "aws_elb" "ptfe" {
+  internal        = "${var.internal_elb}"
   subnets         = ["${var.elb_subnet_id}"]
   security_groups = ["${coalesce(var.external_security_group, aws_security_group.ptfe-external.id)}"]
 
