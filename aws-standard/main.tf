@@ -189,7 +189,7 @@ resource "aws_kms_key" "key" {
         "AWS": [
           "${data.aws_caller_identity.current.arn}",
           "arn:${var.arn_partition}:iam::${data.aws_caller_identity.current.account_id}:root",
-          "${coalesce(var.instance_role_arn ,arn:${var.arn_partition}:iam::${data.aws_caller_identity.current.account_id}:role/tfe_iam_role-${random_id.installation-id.hex)}"
+          "${coalesce(var.instance_role_arn ,"arn:${var.arn_partition}:iam::${data.aws_caller_identity.current.account_id}:role/tfe_iam_role-${random_id.installation-id.hex}")}"
         ]
       },
       "Action": "kms:*",
