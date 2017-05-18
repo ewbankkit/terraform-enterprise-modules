@@ -149,7 +149,7 @@ mkdir -p /etc/atlas
 
 aws configure set s3.signature_version s3v4
 aws configure set default.region ${var.bucket_region}
-aws s3 cp s3://${var.bucket_name}/${aws_s3_bucket_object.setup.key} /etc/atlas/boot.env
+aws s3 cp s3://${var.bucket_name}/tfe-setup-data /etc/atlas/boot.env
   BASH
 }
 
