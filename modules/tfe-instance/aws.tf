@@ -135,7 +135,7 @@ resource "aws_launch_configuration" "ptfe" {
   key_name             = "${var.key_name}"
   security_groups      = ["${var.internal_security_group}"]
 //  security_groups      = ["${coalesce(var.internal_security_group, aws_security_group.ptfe.id)}"]
-  iam_instance_profile = "${coalesce(var.instance_profile_arn, aws_iam_instance_profile.tfe_instance.name)}"
+  iam_instance_profile = "${aws_iam_instance_profile.tfe_instance.name}"
 
   root_block_device {
     volume_size = 250
