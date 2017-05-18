@@ -193,7 +193,7 @@ resource "aws_s3_bucket_object" "setup" {
   # This is to make sure that the bucket exists before
   # the object is put there. We use this because the bucket
   # might not be created by TF though, just referenced.
-  depends_on = ["aws_s3_bucket.tfe_bucket"]
+  //depends_on = ["aws_s3_bucket.tfe_bucket"]
 
   content = <<-BASH
 DATABASE_USER="${var.db_username}"
