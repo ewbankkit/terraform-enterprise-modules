@@ -151,6 +151,8 @@ aws configure set s3.signature_version s3v4
 aws configure set default.region ${var.bucket_region}
 aws s3 cp s3://${aws_s3_bucket_object.setup.bucket}/${aws_s3_bucket_object.setup.key} /etc/atlas/boot.env
   BASH
+
+  depends_on = ["aws_s3_bucket_object.setup"]
 }
 
 resource "aws_autoscaling_group" "ptfe" {
