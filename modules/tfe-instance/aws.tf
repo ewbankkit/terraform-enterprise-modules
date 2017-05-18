@@ -133,7 +133,8 @@ resource "aws_launch_configuration" "ptfe" {
   image_id             = "${var.ami_id}"
   instance_type        = "${var.instance_type}"
   key_name             = "${var.key_name}"
-  security_groups      = ["${coalesce(var.internal_security_group, aws_security_group.ptfe.id)}"]
+  security_groups      = ["${var.internal_security_group}"]
+//  security_groups      = ["${coalesce(var.internal_security_group, aws_security_group.ptfe.id)}"]
   iam_instance_profile = "${aws_iam_instance_profile.tfe_instance.name}"
 
   root_block_device {
@@ -211,7 +212,8 @@ KMS_KEY_ID="${var.kms_key_id}"
 resource "aws_elb" "ptfe" {
   internal        = "${var.internal_elb}"
   subnets         = ["${var.elb_subnet_id}"]
-  security_groups = ["${coalesce(var.external_security_group, aws_security_group.ptfe-external.id)}"]
+  security_groups = ["${var.external_security_group}"]
+  // security_groups = ["${coalesce(var.external_security_group, aws_security_group.ptfe-external.id)}"]
 
   listener {
     instance_port      = 8080

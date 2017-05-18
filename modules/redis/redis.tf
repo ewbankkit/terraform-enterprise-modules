@@ -75,7 +75,8 @@ resource "aws_elasticache_cluster" "redis" {
   num_cache_nodes      = "1"
   parameter_group_name = "${aws_elasticache_parameter_group.redis.name}"
   subnet_group_name    = "${aws_elasticache_subnet_group.redis.name}"
-  security_group_ids   = ["${coalesce(var.redis_security_group, aws_security_group.redis.id)}"]
+  security_group_ids   = ["${var.redis_security_group}"]
+  //security_group_ids   = ["${coalesce(var.redis_security_group, aws_security_group.redis.id)}"]
 }
 
 output "host" {
