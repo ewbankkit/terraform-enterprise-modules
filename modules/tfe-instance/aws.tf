@@ -26,6 +26,10 @@ variable "instance_role_arn" {}
 
 variable "instance_profile_arn" {}
 
+variable "resource_tags" {
+  type = "map"
+}
+
 variable "db_username" {}
 
 variable "db_password" {}
@@ -84,9 +88,7 @@ resource "aws_security_group" "ptfe" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Name = "terraform-enterprise"
-  }
+  tags = "${merge(var.resource_tags, map("Name", "terraform-enterprise"))}"
 }
 
 resource "aws_security_group" "ptfe-external" {
@@ -124,9 +126,7 @@ resource "aws_security_group" "ptfe-external" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Name = "terraform-enterprise-external"
-  }
+  tags = "${merge(var.resource_tags, map("Name", "terraform-enterprise-external"))}"
 }
 
 resource "aws_launch_configuration" "ptfe" {
@@ -184,12 +184,32 @@ resource "aws_autoscaling_group" "ptfe" {
     value               = "${var.installation_id}"
     propagate_at_launch = true
   }
+
+  // Capital One hack...
+  tag {
+    key                 = "ASV"
+    value               = "${lookup(var.resource_tags, "ASV", "")}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "CMDBEnvironment"
+    value               = "${lookup(var.resource_tags, "CMDBEnvironment", "")}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "OwnerContact"
+    value               = "${lookup(var.resource_tags, "OwnerContact", "")}"
+    propagate_at_launch = true
+  }
 }
 
 resource "aws_s3_bucket_object" "setup" {
   bucket     = "${var.bucket_name}"
   key        = "tfe-setup-data"
   kms_key_id = "${var.kms_key_id}"
+  tags       = "${var.resource_tags}"
 
   # This is to make sure that the bucket exists before
   # the object is put there. We use this because the bucket
@@ -239,9 +259,7 @@ resource "aws_elb" "ptfe" {
     interval            = 5
   }
 
-  tags {
-    Name = "terraform-enterprise"
-  }
+  tags = "${merge(var.resource_tags, map("Name", "terraform_enterprise"))}"
 }
 
 output "dns_name" {

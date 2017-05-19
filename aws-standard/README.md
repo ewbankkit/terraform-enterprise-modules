@@ -65,10 +65,11 @@ These variables can be populated, but they have defaults that can also be used.
 * `hostname`: If specifying `zone_id`, this should be set to the name that is used for the record to be registered with the zone. This value combined with the zone information will form the full DNS name for TFE. Example: `emp-test`
 * `instance_role_arn`: Specify the ARN for the instance's IAM role rather than having one created.
 * `instance_profile_arn`: Specify the ARN for the instance's IAM profile rather than having one created.
-* `rds_security_group`: Specify a Security Group for RDS rather than having one created.
-* `redis_security_group`: Specify a Security Group for Redis rather than having one created.
-* `internal_security_group`: Specify a Security Group for internal communications rather than having one created.
-* `external_security_group`: Specify a Security Group for external communications rather than having one created.
+* `rds_security_group`: Specify an existing Security Group ID for RDS rather than having one created.
+* `redis_security_group`: Specify an existing Security Group ID for Redis rather than having one created.
+* `internal_security_group`: Specify an existing Security Group ID for internal communications rather than having one created.
+* `external_security_group`: Specify an existing Security Group ID for external communications rather than having one created.
+* `resource_tags`: Tags that should be added to any resource that support tagging.
 
 ### Populating Variables
 

@@ -14,6 +14,10 @@ variable "subnet_ids" {
 
 variable "rds_security_group" {}
 
+variable "resource_tags" {
+  type = "map"
+}
+
 variable "username" {}
 
 variable "version" {}
@@ -43,6 +47,7 @@ resource "aws_db_subnet_group" "rds" {
   # module, subnet_ids needs to be wrapped in square brackets even though the
   # variable is declared as a list until https://github.com/hashicorp/terraform/issues/13103 is resolved.
   subnet_ids  = ["${var.subnet_ids}"]
+  tags        = "${var.resource_tags}"
 }
 
 resource "aws_security_group" "rds" {
@@ -63,6 +68,8 @@ resource "aws_security_group" "rds" {
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = "${merge(var.resource_tags, map("Name", var.name))}"
 }
 
 resource "aws_db_instance" "rds" {
@@ -84,6 +91,7 @@ resource "aws_db_instance" "rds" {
   storage_encrypted         = true
   kms_key_id                = "${var.kms_key_id}"
   snapshot_identifier       = "${var.snapshot_identifier}"
+  tags                      = "${var.resource_tags}"
 
   # After a snapshot restores, the DB name will be populated from the snapshot,
   # *but* we currently need to omit the name parameter with the ternary above.

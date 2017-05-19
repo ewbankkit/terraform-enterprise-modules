@@ -84,6 +84,12 @@ variable "external_security_group" {
   default     = ""
 }
 
+variable "resource_tags" {
+  type        = "map"
+  description = "Tags that should be added to any resource that support tagging"
+  default     = {}
+}
+
 variable "instance_type" {
   description = "AWS instance type to use"
   default     = "m4.2xlarge"
@@ -170,9 +176,7 @@ resource "aws_kms_key" "key" {
   count       = "${var.kms_key_id != "" ? 0 : 1}"
   description = "TFE resource encryption key"
 
-  tags {
-    Name = "terraform_enterprise-${random_id.installation-id.hex}"
-  }
+  tags = "${merge(var.resource_tags, map("Name", "terraform_enterprise-${random_id.installation-id.hex}"))}"
 
   # This references the role created by the instance module as a name
   # rather than a resource attribute because it causes too much churn.
@@ -231,7 +235,8 @@ module "instance" {
   internal_security_group = "${var.internal_security_group}"
   external_security_group = "${var.external_security_group}"
   instance_role_arn       = "${var.instance_role_arn}"
-  instance_profile_arn    =  "${var.instance_profile_arn}"
+  instance_profile_arn    = "${var.instance_profile_arn}"
+  resource_tags           = "${var.resource_tags}"
   redis_host              = "${module.redis.host}"
   redis_port              = "${module.redis.port}"
   bucket_name             = "${var.bucket_name}"
@@ -253,6 +258,7 @@ module "db" {
   storage_gbs             = "${var.db_size_gb}"
   subnet_ids              = "${var.data_subnet_ids}"
   rds_security_group      = "${var.rds_security_group}"
+  resource_tags           = "${var.resource_tags}"
   version                 = "9.4.7"
   vpc_cidr                = "0.0.0.0/0"
   vpc_id                  = "${data.aws_subnet.instance.vpc_id}"
@@ -268,7 +274,7 @@ module "redis" {
   name                  = "tfe-${random_id.installation-id.hex}"
   subnet_ids            = "${var.data_subnet_ids}"
   redis_security_group  = "${var.redis_security_group}"
-
+  resource_tags         = "${var.resource_tags}"
   vpc_cidr              = "0.0.0.0/0"
   vpc_id                = "${data.aws_subnet.instance.vpc_id}"
   instance_type         = "cache.m3.medium"

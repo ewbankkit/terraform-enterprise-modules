@@ -10,6 +10,10 @@ variable "subnet_ids" {
 
 variable "redis_security_group" {}
 
+variable "resource_tags" {
+  type = "map"
+}
+
 variable "vpc_id" {}
 
 variable "vpc_cidr" {}
@@ -52,9 +56,7 @@ resource "aws_security_group" "redis" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Name = "terraform-enterprise"
-  }
+  tags = "${merge(var.resource_tags, map("Name", "terraform-enterprise"))}"
 }
 
 resource "aws_elasticache_subnet_group" "redis" {
@@ -77,6 +79,7 @@ resource "aws_elasticache_cluster" "redis" {
   subnet_group_name    = "${aws_elasticache_subnet_group.redis.name}"
   security_group_ids   = ["${var.redis_security_group}"]
   //security_group_ids   = ["${coalesce(var.redis_security_group, aws_security_group.redis.id)}"]
+  tags                 = "${var.resource_tags}"
 }
 
 output "host" {
